@@ -1,6 +1,6 @@
 # Sports Club ERP Solution
 
-This is a prototype Enterprise Resource Planning (ERP) application developed for a University Assignment. 
+This is a prototype Enterprise Resource Planning (ERP) application developed for a sports club management system. 
 It demonstrates business process integration, modern web development, and cloud-ready architecture.
 
 ## Tech Stack
