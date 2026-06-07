@@ -19,7 +19,7 @@ export async function POST(request: Request) {
 
     const cost = facility.hourlyRate * parseFloat(durationHours)
 
-    const booking = await prisma.$transaction(async (tx) => {
+    const booking = await prisma.$transaction(async (tx : any) => {
       const newBooking = await tx.booking.create({
         data: {
           memberId: parseInt(memberId),
