@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sports Club ERP Solution
 
-## Getting Started
+This is a prototype Enterprise Resource Planning (ERP) application developed for a University Assignment. 
+It demonstrates business process integration, modern web development, and cloud-ready architecture.
 
-First, run the development server:
+## Tech Stack
+- **Frontend & Backend**: Next.js 14 (App Router)
+- **Database**: Prisma ORM + SQLite (for local zero-setup prototyping)
+- **Styling**: Tailwind CSS & Lucide Icons
+- **Language**: TypeScript
 
+## Modules Implemented
+1. **Member Management**: CRUD operations for sports club members.
+2. **Facility Booking**: Members can book courts, pools, etc., for a specific duration.
+3. **Billing & Payments**: Tracks invoices.
+4. **Inventory Management**: Tracks sports equipment stock levels.
+
+### 🌟 Business Process Integration
+When you navigate to the **Facility Booking** module and create a new booking, the system automatically calculates the cost (`durationHours * hourlyRate`) and inserts a "Pending" Invoice into the **Billing & Payments** module via a database transaction.
+
+---
+
+## Local Setup Instructions
+
+1. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+
+2. **Initialize Database**
+   Since we are using SQLite for the prototype, Prisma handles the setup for you. Run the following command to generate the Prisma Client and apply migrations to create your local `.db` file:
+   ```bash
+   npx prisma migrate dev
+   ```
+
+3. **Run the Development Server**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) with your browser.
+
+## Database Migrations
+Whenever you update `prisma/schema.prisma` to add new fields or tables, you must run:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npx prisma migrate dev --name <your_migration_name>
 ```
+This generates a new SQL migration file and updates your local database.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Azure Deployment Instructions (App Service)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+To deploy this Next.js app to **Microsoft Azure App Service**:
+1. **Database Upgrade**: If moving to a cloud database, change the provider in `prisma/schema.prisma` from `"sqlite"` to `"postgresql"` and provide your Azure PostgreSQL connection string.
+2. **Environment Variables**: Add your connection string to Azure App Service **Application Settings** under `DATABASE_URL`.
+3. **Create Web App**: In the Azure Portal, create a new **Web App** using the Linux OS and Node.js runtime.
+4. **Connect GitHub**: Go to the **Deployment Center** in your Azure Web App and connect this GitHub repository.
+5. **Build Pipeline**: Configure GitHub Actions (Azure generates the workflow file for you). Ensure your build script runs `npm run build` and `npx prisma migrate deploy` or `npx prisma db push` before starting the application.

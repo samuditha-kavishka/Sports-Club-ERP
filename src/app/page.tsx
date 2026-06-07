@@ -1,65 +1,81 @@
-import Image from "next/image";
+import { Users, CalendarDays, Receipt, Box, TrendingUp, Activity, ChevronRight } from 'lucide-react'
+import { prisma } from '@/lib/prisma'
 
-export default function Home() {
+export default async function Dashboard() {
+  const memberCount = await prisma.member.count()
+  const bookingCount = await prisma.booking.count()
+  const inventoryCount = await prisma.inventory.count()
+  const pendingInvoices = await prisma.invoice.count({
+    where: { status: 'Pending' }
+  })
+
+  const stats = [
+    { name: 'Total Members', stat: memberCount.toString(), icon: Users, color: 'text-[#007AFF]', bg: 'bg-[#007AFF]/10' },
+    { name: 'Total Bookings', stat: bookingCount.toString(), icon: CalendarDays, color: 'text-[#AF52DE]', bg: 'bg-[#AF52DE]/10' },
+    { name: 'Pending Invoices', stat: pendingInvoices.toString(), icon: Receipt, color: 'text-[#FF3B30]', bg: 'bg-[#FF3B30]/10' },
+    { name: 'Inventory Items', stat: inventoryCount.toString(), icon: Box, color: 'text-[#34C759]', bg: 'bg-[#34C759]/10' },
+  ]
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="p-8 relative min-h-screen">
+      <div className="flex items-center justify-between mb-8 relative z-10">
+        <div>
+          <h1 className="text-3xl font-bold text-[#1D1D1F] tracking-tight">Overview</h1>
+          <p className="text-[#86868B] mt-1 text-sm font-medium">Welcome back to ZOOKIE Sports Club.</p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full mac-glass border-none shadow-sm">
+          <Activity className="w-4 h-4 text-[#34C759] animate-pulse" />
+          <span className="text-xs font-semibold text-[#1D1D1F]">System Online</span>
         </div>
-      </main>
+      </div>
+      
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 relative z-10">
+        {stats.map((item) => (
+          <div
+            key={item.name}
+            className="mac-glass mac-glass-hover rounded-3xl p-6 relative overflow-hidden group cursor-default"
+          >
+            <div className="flex items-center justify-between">
+              <div className={`rounded-2xl p-3 ${item.bg}`}>
+                <item.icon className={`h-6 w-6 ${item.color}`} aria-hidden="true" />
+              </div>
+              <ChevronRight className="w-5 h-5 text-[#86868B] opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 duration-300" />
+            </div>
+            <div className="mt-6">
+              <p className="text-sm font-semibold text-[#86868B]">{item.name}</p>
+              <p className="text-3xl font-bold text-[#1D1D1F] tracking-tight mt-1">{item.stat}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2 relative z-10">
+        <div className="mac-glass rounded-3xl p-6 shadow-sm">
+           <div className="flex items-center justify-between mb-6">
+             <h2 className="text-lg font-bold text-[#1D1D1F] flex items-center gap-2">
+               <CalendarDays className="w-5 h-5 text-[#007AFF]" />
+               Recent Bookings
+             </h2>
+             <button className="text-sm font-semibold text-[#007AFF] hover:opacity-80 transition-opacity">View All</button>
+           </div>
+           <div className="h-48 flex items-center justify-center rounded-2xl bg-black/5 border border-black/5 border-dashed">
+             <p className="text-sm font-medium text-[#86868B]">Booking charts will appear here.</p>
+           </div>
+        </div>
+        
+        <div className="mac-glass rounded-3xl p-6 shadow-sm">
+           <div className="flex items-center justify-between mb-6">
+             <h2 className="text-lg font-bold text-[#1D1D1F] flex items-center gap-2">
+               <TrendingUp className="w-5 h-5 text-[#AF52DE]" />
+               Revenue Overview
+             </h2>
+             <button className="text-sm font-semibold text-[#007AFF] hover:opacity-80 transition-opacity">View Report</button>
+           </div>
+           <div className="h-48 flex items-center justify-center rounded-2xl bg-black/5 border border-black/5 border-dashed">
+             <p className="text-sm font-medium text-[#86868B]">Revenue analytics will appear here.</p>
+           </div>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
