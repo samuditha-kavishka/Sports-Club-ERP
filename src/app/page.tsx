@@ -1,18 +1,18 @@
 import { Users, CalendarDays, Receipt, Box, TrendingUp, Activity, ChevronRight } from 'lucide-react'
 export default async function Dashboard() {
-  const membersRes = await fetch('http://localhost:5000/api/members', { cache: 'no-store' }).catch(() => null);
+  const membersRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/members`, { cache: 'no-store' }).catch(() => null);
   const members = membersRes?.ok ? await membersRes.json() : [];
   const memberCount = members.length;
 
-  const bookingsRes = await fetch('http://localhost:5000/api/bookings', { cache: 'no-store' }).catch(() => null);
+  const bookingsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings`, { cache: 'no-store' }).catch(() => null);
   const bookings = bookingsRes?.ok ? await bookingsRes.json() : [];
   const bookingCount = bookings.length;
 
-  const inventoryRes = await fetch('http://localhost:5000/api/inventory', { cache: 'no-store' }).catch(() => null);
+  const inventoryRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/inventory`, { cache: 'no-store' }).catch(() => null);
   const inventory = inventoryRes?.ok ? await inventoryRes.json() : [];
   const inventoryCount = inventory.length;
 
-  const invoicesRes = await fetch('http://localhost:5000/api/invoices', { cache: 'no-store' }).catch(() => null);
+  const invoicesRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoices`, { cache: 'no-store' }).catch(() => null);
   const invoices = invoicesRes?.ok ? await invoicesRes.json() : [];
   const pendingInvoices = invoices.filter((i: any) => i.status === 'Pending').length;
 

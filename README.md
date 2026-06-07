@@ -4,10 +4,11 @@ This is a prototype Enterprise Resource Planning (ERP) application developed for
 It demonstrates business process integration, modern web development, and cloud-ready architecture.
 
 ## Tech Stack
-- **Frontend & Backend**: Next.js 14 (App Router)
-- **Database**: Prisma ORM + SQLite (for local zero-setup prototyping)
+- **Frontend**: Next.js 14 (App Router, React)
+- **Backend**: C# ASP.NET Core Web API
+- **Database**: Entity Framework Core + SQLite
 - **Styling**: Tailwind CSS & Lucide Icons
-- **Language**: TypeScript
+- **Language**: TypeScript (Frontend), C# (Backend)
 
 ## Modules Implemented
 1. **Member Management**: CRUD operations for sports club members.
@@ -22,37 +23,41 @@ When you navigate to the **Facility Booking** module and create a new booking, t
 
 ## Local Setup Instructions
 
-1. **Install Dependencies**
+1. **Install Frontend Dependencies**
    ```bash
    npm install
    ```
 
-2. **Initialize Database**
-   Since we are using SQLite for the prototype, Prisma handles the setup for you. Run the following command to generate the Prisma Client and apply migrations to create your local `.db` file:
-   ```bash
-   npx prisma migrate dev
-   ```
-
-3. **Run the Development Server**
+2. **Run the Next.js Frontend**
    ```bash
    npm run dev
    ```
    Open [http://localhost:3000](http://localhost:3000) with your browser.
 
+3. **Run the C# Backend**
+   Open a new terminal, navigate to the API folder, and run:
+   ```bash
+   cd SportsClubERP.Api
+   dotnet run
+   ```
+   The backend will be available at `http://localhost:5000` or `https://localhost:5001`.
+
 ## Database Migrations
-Whenever you update `prisma/schema.prisma` to add new fields or tables, you must run:
+Whenever you update your C# entity models in `SportsClubERP.Api/Models`, you must run EF Core migrations:
 ```bash
-npx prisma migrate dev --name <your_migration_name>
+cd SportsClubERP.Api
+dotnet ef migrations add <YourMigrationName>
+dotnet ef database update
 ```
-This generates a new SQL migration file and updates your local database.
+This generates a new SQL migration and updates your local database.
 
 ---
 
 ## Azure Deployment Instructions (App Service)
 
-To deploy this Next.js app to **Microsoft Azure App Service**:
-1. **Database Upgrade**: If moving to a cloud database, change the provider in `prisma/schema.prisma` from `"sqlite"` to `"postgresql"` and provide your Azure PostgreSQL connection string.
-2. **Environment Variables**: Add your connection string to Azure App Service **Application Settings** under `DATABASE_URL`.
-3. **Create Web App**: In the Azure Portal, create a new **Web App** using the Linux OS and Node.js runtime.
-4. **Connect GitHub**: Go to the **Deployment Center** in your Azure Web App and connect this GitHub repository.
-5. **Build Pipeline**: Configure GitHub Actions (Azure generates the workflow file for you). Ensure your build script runs `npm run build` and `npx prisma migrate deploy` or `npx prisma db push` before starting the application.
+To deploy this application to **Microsoft Azure App Service**:
+1. **Database Upgrade**: If moving to a cloud database, change the provider in `SportsClubERP.Api/Program.cs` to PostgreSQL/SQL Server and provide your Azure connection string.
+2. **Environment Variables**: Add your connection string to Azure App Service **Application Settings**.
+3. **Create Web Apps**: In the Azure Portal, create a Node.js Web App for the Next.js frontend and a .NET Web App for the C# API.
+4. **Connect GitHub**: Go to the **Deployment Center** in both Web Apps and connect this repository.
+5. **Configure Next.js**: Ensure the `NEXT_PUBLIC_API_URL` environment variable points to your deployed C# API URL in the frontend App Service.

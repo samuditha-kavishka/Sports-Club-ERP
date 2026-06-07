@@ -10,14 +10,14 @@ export default function BillingPage() {
   }, [])
 
   const fetchInvoices = async () => {
-    const res = await fetch('/api/invoices')
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoices`)
     const data = await res.json()
     setInvoices(data)
   }
 
   const handleMarkPaid = async (id: number) => {
-    await fetch('/api/invoices', {
-      method: 'PATCH',
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoices/${id}`, {
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, status: 'Paid' })
     })

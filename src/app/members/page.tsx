@@ -13,14 +13,14 @@ export default function MembersPage() {
   }, [])
 
   const fetchMembers = async () => {
-    const res = await fetch('/api/members')
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/members`)
     const data = await res.json()
     setMembers(data)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await fetch('/api/members', {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/members`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, phone })

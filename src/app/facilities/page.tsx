@@ -21,9 +21,9 @@ export default function FacilitiesPage() {
 
   const fetchData = async () => {
     const [facRes, memRes, bookRes] = await Promise.all([
-      fetch('/api/facilities'),
-      fetch('/api/members'),
-      fetch('/api/bookings')
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/facilities`),
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/members`),
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings`)
     ])
     setFacilities(await facRes.json())
     setMembers(await memRes.json())
@@ -32,7 +32,7 @@ export default function FacilitiesPage() {
 
   const handleAddFacility = async (e: React.FormEvent) => {
     e.preventDefault()
-    await fetch('/api/facilities', {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/facilities`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: facilityName, hourlyRate })
@@ -44,7 +44,7 @@ export default function FacilitiesPage() {
 
   const handleAddBooking = async (e: React.FormEvent) => {
     e.preventDefault()
-    await fetch('/api/bookings', {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ memberId, facilityId, bookingDate, durationHours })
