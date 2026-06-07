@@ -1,12 +1,9 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 
 export async function GET() {
-  const bookings = await prisma.booking.findMany({
-    include: { member: true, facility: true },
-    orderBy: { bookingDate: 'desc' }
-  })
-  return NextResponse.json(bookings)
+  const res = await fetch('http://localhost:5000/api/bookings', { cache: 'no-store' })
+  const data = await res.json()
+  return NextResponse.json(data)
 }
 
 export async function POST(request: Request) {
@@ -14,34 +11,22 @@ export async function POST(request: Request) {
     const json = await request.json()
     const { memberId, facilityId, bookingDate, durationHours } = json
 
-    const facility = await prisma.facility.findUnique({ where: { id: parseInt(facilityId) } })
-    if (!facility) throw new Error('Facility not found')
-
-    const cost = facility.hourlyRate * parseFloat(durationHours)
-
-    const booking = await prisma.$transaction(async (tx) => {
-      const newBooking = await tx.booking.create({
-        data: {
+    const res = await fetch('http://localhost:5000/api/bookings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
           memberId: parseInt(memberId),
           facilityId: parseInt(facilityId),
-          bookingDate: new Date(bookingDate),
+          bookingDate: new Date(bookingDate).toISOString(),
           durationHours: parseFloat(durationHours)
-        }
       })
-
-      // Auto-create pending invoice
-      await tx.invoice.create({
-        data: {
-          memberId: parseInt(memberId),
-          bookingId: newBooking.id,
-          totalAmount: cost,
-          status: 'Pending'
-        }
-      })
-
-      return newBooking
     })
 
+    if (!res.ok) {
+        throw new Error('Failed to create booking on C# backend')
+    }
+
+    const booking = await res.json()
     return NextResponse.json(booking, { status: 201 })
   } catch (error) {
     return NextResponse.json({ error: 'Failed to create booking' }, { status: 500 })

@@ -1,13 +1,20 @@
 import { Users, CalendarDays, Receipt, Box, TrendingUp, Activity, ChevronRight } from 'lucide-react'
-import { prisma } from '@/lib/prisma'
-
 export default async function Dashboard() {
-  const memberCount = await prisma.member.count()
-  const bookingCount = await prisma.booking.count()
-  const inventoryCount = await prisma.inventory.count()
-  const pendingInvoices = await prisma.invoice.count({
-    where: { status: 'Pending' }
-  })
+  const membersRes = await fetch('http://localhost:5000/api/members', { cache: 'no-store' }).catch(() => null);
+  const members = membersRes?.ok ? await membersRes.json() : [];
+  const memberCount = members.length;
+
+  const bookingsRes = await fetch('http://localhost:5000/api/bookings', { cache: 'no-store' }).catch(() => null);
+  const bookings = bookingsRes?.ok ? await bookingsRes.json() : [];
+  const bookingCount = bookings.length;
+
+  const inventoryRes = await fetch('http://localhost:5000/api/inventory', { cache: 'no-store' }).catch(() => null);
+  const inventory = inventoryRes?.ok ? await inventoryRes.json() : [];
+  const inventoryCount = inventory.length;
+
+  const invoicesRes = await fetch('http://localhost:5000/api/invoices', { cache: 'no-store' }).catch(() => null);
+  const invoices = invoicesRes?.ok ? await invoicesRes.json() : [];
+  const pendingInvoices = invoices.filter((i: any) => i.status === 'Pending').length;
 
   const stats = [
     { name: 'Total Members', stat: memberCount.toString(), icon: Users, color: 'text-[#007AFF]', bg: 'bg-[#007AFF]/10' },

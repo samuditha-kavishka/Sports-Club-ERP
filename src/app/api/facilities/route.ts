@@ -1,17 +1,25 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 
 export async function GET() {
-  const facilities = await prisma.facility.findMany()
-  return NextResponse.json(facilities)
+  const res = await fetch('http://localhost:5000/api/facilities', { cache: 'no-store' })
+  const data = await res.json()
+  return NextResponse.json(data)
 }
 
 export async function POST(request: Request) {
   try {
     const json = await request.json()
-    const facility = await prisma.facility.create({
-      data: { name: json.name, hourlyRate: parseFloat(json.hourlyRate) }
+    const res = await fetch('http://localhost:5000/api/facilities', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: json.name, hourlyRate: parseFloat(json.hourlyRate) })
     })
+    
+    if (!res.ok) {
+        throw new Error('Failed to create facility on C# backend')
+    }
+    
+    const facility = await res.json()
     return NextResponse.json(facility, { status: 201 })
   } catch (error) {
     return NextResponse.json({ error: 'Failed to create facility' }, { status: 500 })
